@@ -1,0 +1,50 @@
+<!--
+TemplateDriven formulaire basique
+**********************************
+C'est quoi ?
+  tout est déduit à partir du template(le modèle) et drivé(piloté) par des directives
+
+Exemple:
+
+<form>
+  (submit)="onUneMethode(refMonFormualire)
+  #refMonFormulaire="ngForm"
+
+<un élément>
+  name="blabla"
+  ngModel
+  pour avoir le "control" sur un élément => lui associé une référence à la directive ngModel ex: #blabla="ngModel"
+
+<button>
+  type="sbumit"
+
+-->
+
+<mat-card>
+  <form (submit)="onSavePost(postForm)" #postForm="ngForm">
+    <mat-form-field>
+      <input matInput type="text" required [ngModel]="post?.title" name="title" placeholder="title here..." #title="ngModel"/>
+      <mat-error *ngIf="title.invalid">
+        Please enter a valid title
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Favorite food</mat-label>
+      <textarea
+        matInput
+        rows="10"
+        required
+        placeholder="content..."
+        name="content"
+        [ngModel]="post?.content"
+        #content="ngModel"
+      ></textarea>
+      <mat-error *ngIf="content.invalid">
+        Please enter a valid content
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">Save post</button>
+  </form>
+</mat-card>
