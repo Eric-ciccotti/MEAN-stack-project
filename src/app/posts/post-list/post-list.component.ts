@@ -15,6 +15,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   //   { title: 'Third post', content: 'blabla' },
   // ];
 
+  spinnerLoading = false;
   posts: Post[] = [];
   private postsSub: Subscription;
 
@@ -28,9 +29,11 @@ export class PostListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.spinnerLoading = true;
     this.postsService.getPosts();
     this.postsSub = this.postsService.getPostUpdateListener()
     .subscribe((posts: Post[]) => {
+      this.spinnerLoading = false;
       this.posts = posts;
     })
   }

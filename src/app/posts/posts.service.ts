@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Post } from './post.model';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,7 @@ export class PostsService {
   //OBSERVABLE de type Subject (un observable jetable)
   private postsUpdated = new Subject<Post[]>();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   /*
     pipe puis rxjs map sur le flux de donnée
@@ -59,7 +61,13 @@ export class PostsService {
         post.id = id;
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
+        this.navigateToAccueil();
       })
+  }
+
+  //méthode qui utilise le router service poru revenir à l'accueil
+  navigateToAccueil() {
+    this.router.navigate(["/"]);
   }
 
   updatePost(id: string, title: string, content: string) {
@@ -75,6 +83,7 @@ export class PostsService {
 
         this.posts = updatedPosts;
         this.postsUpdated.next([...this.posts]);
+        this.navigateToAccueil();
       })
   }
 

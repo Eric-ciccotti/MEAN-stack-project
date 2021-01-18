@@ -21,7 +21,8 @@ Exemple:
 -->
 
 <mat-card>
-  <form (submit)="onSavePost(postForm)" #postForm="ngForm">
+  <mat-spinner *ngIf="spinnerLoading"></mat-spinner>
+  <form (submit)="onSavePost(postForm)" #postForm="ngForm" *ngIf="!spinnerLoading">
     <mat-form-field>
       <input matInput type="text" required [ngModel]="post?.title" name="title" placeholder="title here..." #title="ngModel"/>
       <mat-error *ngIf="title.invalid">

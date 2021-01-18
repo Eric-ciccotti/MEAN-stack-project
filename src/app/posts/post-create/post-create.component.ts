@@ -14,18 +14,24 @@ export class PostCreateComponent implements OnInit {
   enteredTitle = "";
   post: Post;
   private mode = "create";
-  private postId: string;
+  spinnerLoading = false;
+  private postId: string | null;
 
   // @Output()  postCreated = new EventEmitter<Post>();
 
   ngOnInit(): void {
     //on regarde sur la route change, et si il y a un "postId" en fonction de ça on change de mode
     //si on est en mode edit on récupère le post via le service
+    //le point ! c'est pour que typescript même si il voit que c'est null me "fasse confiance"
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
         this.mode = "edit";
         this.postId = paramMap.get('postId');
+        this.spinnerLoading = true;
+        setTimeout(() => {},2000);
         this.postsService.getPost(this.postId).subscribe(postData => {
+          //mettre la propriété du spinner ici dans le subscribe
+          this.spinnerLoading = false;
           //data coming from database donc postData._id
           this.post = {id: postData._id, title: postData.title, content: postData.content};
         })
@@ -40,6 +46,10 @@ export class PostCreateComponent implements OnInit {
     if (form.invalid) {
       return;
     }
+
+    //pas la peine de le false car on navigue ailleurs
+    this.spinnerLoading = true;
+
     if (this.mode === "create") {
       this.postsService.addPost(form.value.title, form.value.content);
     } else {
