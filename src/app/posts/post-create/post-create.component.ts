@@ -3,7 +3,7 @@ import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
-import { mimeTypeValidator } from "./mime-type.validator";
+import { mimeTypeValidator } from './mime-type.validator';
 
 @Component({
   selector: 'app-post-create',
@@ -27,17 +27,18 @@ export class PostCreateComponent implements OnInit {
     //si on est en mode edit on récupère le post via le service
     //le point ! c'est pour que typescript même si il voit que c'est null me "fasse confiance"
 
-
     // les quotations pour le titre et e content ne sont pas obligatoire en reactiveForme
     this.form = new FormGroup({
-      'title': new FormControl(null, {
-        validators: [Validators.required, Validators.minLength(3)],}),
-      'content': new FormControl(null, {
-        validators: [Validators.required]}),
-      'image': new FormControl(null, {
+      title: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)],
+      }),
+      content: new FormControl(null, {
         validators: [Validators.required],
-        asyncValidators: [mimeTypeValidator]
-      })
+      }),
+      image: new FormControl(null, {
+        validators: [Validators.required],
+        asyncValidators: [mimeTypeValidator],
+      }),
     });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -55,8 +56,10 @@ export class PostCreateComponent implements OnInit {
             content: postData.content,
           };
           //on re Set la value par defaut du formControl avec les données récupérée par le service
-          this.form.setValue({'title': this.post.title,
-          'content': this.post.content})
+          this.form.setValue({
+            title: this.post.title,
+            content: this.post.content,
+          });
         });
       } else {
         this.mode = 'create';
@@ -74,7 +77,11 @@ export class PostCreateComponent implements OnInit {
     this.spinnerLoading = true;
 
     if (this.mode === 'create') {
-      this.postsService.addPost(this.form.value.title, this.form.value.content);
+      this.postsService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     } else {
       this.postsService.updatePost(
         this.postId,
@@ -89,7 +96,7 @@ export class PostCreateComponent implements OnInit {
     //on explique que cet event est un HTMLinput et on récupère que le 1er element donc [0]
     const file = (event.target as HTMLInputElement).files![0];
     //je corrige la valeur dans mon formulaire
-    this.form.patchValue({image: file});
+    this.form.patchValue({ image: file });
     //je récupère le champ image et mets à jour sa valeur et sa validité
     this.form.get('image').updateValueAndValidity();
 
@@ -99,7 +106,7 @@ export class PostCreateComponent implements OnInit {
       this.imagePreview = reader.result as string;
     };
     reader.readAsDataURL(file);
-    }
+  }
 
   constructor(
     public postsService: PostsService,

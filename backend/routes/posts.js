@@ -28,11 +28,11 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const name = file.originalname.toLowerCase().split(' ').join('_');
     const extension = MIME_TYPE_MAP[file.mimetype];
-    cb(null, name + '_' + Date.now() + '.' + ext)
+    cb(null, name + '_' + Date.now() + '.' + extension)
   },
 });
 
-router.post("", multer(storage).single("image"),(req, res, next) => {
+router.post("", multer({storage: storage}).single("image"),(req, res, next) => {
   const post = new Post({
     title: req.body.title,
     content: req.body.content
