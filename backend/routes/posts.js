@@ -43,12 +43,16 @@ router.post("", multer({storage: storage}).single("image"),(req, res, next) => {
   post.save().then(createdPost => {
     res.status(201).json({
       message: "Post added successfully",
-      //on overide l'id
+      //c'est la réponse qu'on récupère dans le front après la création de l'objet
+      //on oublie pas que dans le front c'est id et pas _id
+      //le toObject() c'est pour convertir notre moogoose object, car le spread operator
+      //ne fait pas la conversion et donne une copie de l'objet avec des propriétés qui ne nous servent à rien
       post: {
-        ...createdPost,
+        ...createdPost.toObject(),
         id: createdPost._id
       }
     });
+
   });
 });
 
