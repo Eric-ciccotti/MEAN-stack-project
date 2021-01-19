@@ -30,6 +30,7 @@ export const mimeTypeValidator = (control: AbstractControl
                   break
               }
             if (isValid) {
+              //si c'est valid on retourne null
               observer.next(null);
             } else {
               observer.next({invalidMimeType: true});

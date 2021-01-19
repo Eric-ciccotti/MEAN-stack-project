@@ -27,12 +27,12 @@ export class PostsService {
       .get<{ message: string; posts: any }>('http://localhost:3000/api/posts')
       .pipe(
         map((postData) => {
-          return postData.posts.map(
-            (post: { _id: any; title: any; content: any }) => {
+          return postData.posts.map((post: { _id: any; title: any; content: any; imagePath: any; }) => {
               return {
                 id: post._id,
                 title: post.title,
                 content: post.content,
+                imagePath: post.imagePath
               };
             }
           );
@@ -65,15 +65,16 @@ export class PostsService {
     postData.append('content', content);
     postData.append('image', image, title);
     this.http
-      .post<{ message: string; postId: string }>(
+      .post<{ message: string; post: Post }>(
         'http://localhost:3000/api/posts',
         postData
       )
       .subscribe((responseData) => {
         const post: Post = {
-          id: responseData.postId,
+          id: responseData.post.Id,
           title: title,
           content: content,
+          imagePath: responseData.post.imagePath
         };
         //récuparation de l'id dans la bdd
         this.posts.push(post);
@@ -88,7 +89,7 @@ export class PostsService {
   }
 
   updatePost(id: string, title: string, content: string) {
-    const post: Post = { id, title, content };
+    const post: Post = { id, title, content, imagePath: null};
     this.http
       .put<{ message: string; postId: string }>(
         'http://localhost:3000/api/posts/' + id,

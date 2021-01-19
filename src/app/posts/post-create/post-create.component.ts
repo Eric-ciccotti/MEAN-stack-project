@@ -54,6 +54,7 @@ export class PostCreateComponent implements OnInit {
             id: postData._id,
             title: postData.title,
             content: postData.content,
+            imagePath: null!
           };
           //on re Set la value par defaut du formControl avec les données récupérée par le service
           this.form.setValue({
