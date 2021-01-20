@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { Post } from './post.model';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +27,7 @@ export class PostsService {
       .get<{ message: string; posts: any }>('http://localhost:3000/api/posts')
       .pipe(
         map((postData) => {
-          return postData.posts.map((post: { _id: any; title: any; content: any; imagePath: any; }) => {
+          return postData.posts.map(post => {
               return {
                 id: post._id,
                 title: post.title,
@@ -54,7 +54,7 @@ export class PostsService {
     //return {...this.posts.find(p => p.id === id)}
 
     // on veut récupérer l'info direct depuis notre serveur
-    return this.http.get<{ _id: string; title: string; content: string }>(
+    return this.http.get<{ _id: string; title: string; content: string, imagePath: string }>(
       'http://localhost:3000/api/posts/' + id
     );
   }
@@ -71,7 +71,7 @@ export class PostsService {
       )
       .subscribe((responseData) => {
         const post: Post = {
-          id: responseData.post.Id,
+          id: responseData.post.id,
           title: title,
           content: content,
           imagePath: responseData.post.imagePath
@@ -88,19 +88,40 @@ export class PostsService {
     this.router.navigate(['/']);
   }
 
-  updatePost(id: string, title: string, content: string) {
-    const post: Post = { id, title, content, imagePath: null};
+  updatePost(id: string, title: string, content: string, image: File | string) {
+    let postData: Post | FormData;
+    //si quand j'update j'ai une nouvelle image
+    if (typeof(image) === 'object') {
+      postData = new FormData();
+      postData.append('id', id),
+      postData.append("title", title);
+      postData.append("content", content);
+      postData.append("image", image, title);
+    } else {
+      postData = {
+      id: id,
+      title: title,
+      content: content,
+      imagePath: image
+    }
+    // si quand j'update j'ai juste lien classique pour l'image
+    };
+
     this.http
       .put<{ message: string; postId: string }>(
-        'http://localhost:3000/api/posts/' + id,
-        post
-      )
-      .subscribe((response) => {
-        //copie de mes pots dans un tableau
+        'http://localhost:3000/api/posts/' + id, postData)
+      .subscribe(response => {
+        //copie de mes posts dans un tableau
         const updatedPosts = [...this.posts];
         //on veut l'index du vieux post = au post qu'on update
-        const oldPostIndex = updatedPosts.findIndex((p) => p.id === post.id);
+        const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
         // dans la copie de mon tableau je remplace le vieux post
+        const post: Post = {
+          id: id,
+          title: title,
+          content: content,
+          imagePath: response.imagePath
+        };
         updatedPosts[oldPostIndex] = post;
 
         this.posts = updatedPosts;

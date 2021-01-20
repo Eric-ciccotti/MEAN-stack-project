@@ -56,12 +56,25 @@ router.post("", multer({storage: storage}).single("image"),(req, res, next) => {
   });
 });
 
-router.put("/:id", (req, res, next) => {
+router.put(
+  "/:id",
+  multer({storage: storage}).single("image"),
+ (req, res, next) => {
+   let imagePath = req.body.imagePath;
+  // si quand on met a jour il y a une image, un nouveau "file"
+  // sinon c'est egale au "body" qu'on récupère du front (imagePath: image) qui est une string
+  if (req.file) {
+    //on créer l'url
+    const url = req.protocol + '://' + req.get("host");
+    imagePath = url + "/images/" + req.file.filename
+  };
   const post = new Post({
     _id: req.body.id,
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    imagePath: imagePath
   });
+  console.log(post);
   Post.updateOne({ _id: req.params.id }, post).then(result => {
     res.status(200).json({ message: "Update successful!" });
   });
