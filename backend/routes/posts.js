@@ -80,9 +80,11 @@ router.put(
 });
 
 router.get("", (req, res, next) => {
+  //on oublie pas de convertir les string en number avec le +
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
   const postQuery = Post.find();
+  //si il y a un deux ces deux paramètres alors on récupère uniquement ce dont on a besoin
   if(pageSize && currentPage) {
     postQuery
       .skip(pageSize * (currentPage - 1))
