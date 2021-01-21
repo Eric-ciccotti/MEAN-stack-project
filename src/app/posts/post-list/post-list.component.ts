@@ -16,7 +16,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   //   { title: 'Third post', content: 'blabla' },
   // ];
 
-  totalPosts = 10;
+  totalPosts = 0;
   postsPerPage = 2;
   pageSizeOptions = [1, 2, 3, 10];
   currentPage = 1;
@@ -29,6 +29,8 @@ export class PostListComponent implements OnInit, OnDestroy {
   }
 
   onChangePage(pageData: PageEvent) {
+    //il se remet sur off automatiquement dans le
+    this.spinnerLoading = true;
     //on démarre l'index des pages à partir de zero
     this.currentPage = pageData.pageIndex + 1;
     this.postsPerPage = pageData.pageSize;
@@ -38,16 +40,19 @@ export class PostListComponent implements OnInit, OnDestroy {
   nextStep(){}
 
   onDelete(postId: string){
-    this.postsService.deletePost(postId);
+    this.postsService.deletePost(postId).subscribe(() => {
+      this.postsService.getPosts(this.postsPerPage, this.currentPage)
+    });
   }
 
   ngOnInit(): void {
     this.spinnerLoading = true;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
     this.postsSub = this.postsService.getPostUpdateListener()
-    .subscribe((posts: Post[]) => {
+    .subscribe((postsData: {posts: Post[], postCount: number}) => {
       this.spinnerLoading = false;
-      this.posts = posts;
+      this.totalPosts = postsData.postCount;
+      this.posts = postsData.posts;
     })
   }
 

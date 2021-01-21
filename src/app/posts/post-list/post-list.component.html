@@ -22,6 +22,7 @@
   [pageSize]="postsPerPage"
   [pageSizeOptions]="pageSizeOptions"
   (page)="onChangePage($event)"
+  *ngIf="posts.length > 0"
 ></mat-paginator>
 
 <p class="info-text mat-body-1" *ngIf="posts.length <= 0 && !spinnerLoading">
