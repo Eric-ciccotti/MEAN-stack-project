@@ -1,7 +1,6 @@
 //séparation des routes dans un autre fichier pour plus de clareté
 // avec le express.Router() constructeur
 
-const { FILE } = require("dns");
 const express = require("express");
 const multer = require("multer");
 const router = express.Router();
@@ -81,7 +80,15 @@ router.put(
 });
 
 router.get("", (req, res, next) => {
-  Post.find().then(documents => {
+  const pageSize = +req.query.pagesize;
+  const currentPage = +req.query.page;
+  const postQuery = Post.find();
+  if(pageSize && currentPage) {
+    postQuery
+      .skip(pageSize * (currentPage - 1))
+      .limit(pageSize);
+  }
+  postQuery.then(documents => {
     res.status(200).json({
       message: "Posts fetched successfully!",
       posts: documents
