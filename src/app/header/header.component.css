@@ -9,6 +9,10 @@ a {
   color: white;
 }
 
+ul {
+  display: flex;
+}
+
 .persoSpacer {
   flex: 1 1 auto;
 }
